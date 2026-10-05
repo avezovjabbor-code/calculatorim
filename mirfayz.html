@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRFAYZ | Professional Kalkulyator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 20% 20%, #171b30 0%, #0c0f1d 50%, #060810 100%);
+      --calc-bg: rgba(22, 28, 48, 0.72);
+      --calc-border: rgba(255, 255, 255, 0.1);
+      --calc-glow: 0 30px 80px rgba(0, 0, 0, 0.65), 0 0 40px rgba(99, 102, 241, 0.2);
+      
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.45);
+      --accent-hover: #4f46e5;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      
+      --operator-bg: rgba(99, 102, 241, 0.15);
+      --operator-color: #818cf8;
+      --operator-border: rgba(99, 102, 241, 0.25);
+      
+      --btn-num-bg: rgba(255, 255, 255, 0.05);
+      --btn-num-hover: rgba(255, 255, 255, 0.12);
+      --btn-num-color: #f8fafc;
+      --btn-border: rgba(255, 255, 255, 0.07);
+      
+      --fn-btn-bg: rgba(255, 255, 255, 0.08);
+      --fn-btn-color: #94a3b8;
+      
+      --danger-color: #f43f5e;
+      --danger-bg: rgba(244, 63, 94, 0.16);
+      --danger-border: rgba(244, 63, 94, 0.3);
+      
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
+      --display-bg: rgba(10, 14, 26, 0.85);
+    }
+
+    [data-theme="emerald"] {
+      --bg-gradient: radial-gradient(circle at 20% 20%, #064e3b 0%, #06261f 50%, #031410 100%);
+      --calc-bg: rgba(6, 40, 32, 0.75);
+      --calc-glow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 45px rgba(16, 185, 129, 0.25);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.45);
+      --accent-hover: #059669;
+      --accent-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --operator-bg: rgba(16, 185, 129, 0.16);
+      --operator-color: #34d399;
+      --operator-border: rgba(16, 185, 129, 0.3);
+    }
+
+    [data-theme="cyber"] {
+      --bg-gradient: radial-gradient(circle at 80% 20%, #31103f 0%, #150928 50%, #0a0414 100%);
+      --calc-bg: rgba(30, 15, 48, 0.75);
+      --calc-glow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 45px rgba(236, 72, 153, 0.25);
+      --accent: #ec4899;
+      --accent-glow: rgba(236, 72, 153, 0.45);
+      --accent-hover: #db2777;
+      --accent-gradient: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      --operator-bg: rgba(236, 72, 153, 0.16);
+      --operator-color: #f472b6;
+      --operator-border: rgba(236, 72, 153, 0.3);
+    }
+
+    [data-theme="amber"] {
+      --bg-gradient: radial-gradient(circle at 20% 80%, #451a03 0%, #1c0c04 50%, #0d0502 100%);
+      --calc-bg: rgba(36, 18, 10, 0.75);
+      --calc-glow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 45px rgba(245, 158, 11, 0.25);
+      --accent: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.45);
+      --accent-hover: #d97706;
+      --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      --operator-bg: rgba(245, 158, 11, 0.16);
+      --operator-color: #fbbf24;
+      --operator-border: rgba(245, 158, 11, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+      transition: background 0.5s ease;
+    }
+
+    /* Ambient background orbs */
+    .ambient-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.45;
+      animation: floatOrb 12s ease-in-out infinite alternate;
+    }
+
+    .ambient-orb-1 {
+      width: 450px;
+      height: 450px;
+      background: var(--accent);
+      top: -100px;
+      left: 15%;
+    }
+
+    .ambient-orb-2 {
+      width: 400px;
+      height: 400px;
+      background: #3b82f6;
+      bottom: -100px;
+      right: 15%;
+      animation-delay: -6s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.15); }
+    }
+
+    /* Main Container */
+    .app-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 450px;
+      transition: max-width 0.35s ease;
+    }
+
+    .app-wrapper.scientific-mode {
+      max-width: 680px;
+    }
+
+    /* Glass Calculator Shell */
+    .calculator-container {
+      background: var(--calc-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--calc-border);
+      border-radius: 32px;
+      box-shadow: var(--calc-glow);
+      padding: 26px 24px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .calculator-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Header Bar */
+    .calc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 2px 7px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 20px;
+      color: #818cf8;
+      text-transform: uppercase;
+      -webkit-text-fill-color: initial;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Display Screen */
+    .display-screen {
+      background: var(--display-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 124px;
+      box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.45);
+      transition: border-color 0.2s;
+    }
+
+    .display-screen:focus-within {
+      border-color: var(--accent);
+    }
+
+    .display-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .mode-indicator {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .pill-tag {
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      font-weight: 600;
+      font-size: 0.68rem;
+    }
+
+    .pill-tag.active {
+      color: var(--accent);
+      background: var(--operator-bg);
+    }
+
+    .display-history-expr {
+      font-family: 'JetBrains Mono', monospace;
+      color: #94a3b8;
+      font-size: 1.05rem;
+      text-align: right;
+      min-height: 24px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      word-break: break-all;
+    }
+
+    .display-history-expr::-webkit-scrollbar {
+      display: none;
+    }
+
+    .display-main {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.6rem;
+      font-weight: 600;
+      color: var(--text-main);
+      text-align: right;
+      letter-spacing: -0.5px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      line-height: 1.2;
+      transition: font-size 0.15s ease;
+    }
+
+    .display-main::-webkit-scrollbar {
+      display: none;
+    }
+
+    .display-tools {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .mini-tool-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .mini-tool-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Keypad Grid Layout */
+    .keypad-container {
+      display: grid;
+      gap: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .standard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .scientific-grid {
+      display: none;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeInGrid 0.3s ease-in-out;
+    }
+
+    .scientific-mode .scientific-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .scientific-mode .standard-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @keyframes fadeInGrid {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .btn {
+      position: relative;
+      height: 60px;
+      border-radius: 18px;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-num-bg);
+      color: var(--btn-num-color);
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:hover {
+      background: var(--btn-num-hover);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn:active, .btn.keyboard-active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Ripple Effect */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(0);
+      animation: rippleAnim 0.5s linear;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Specialized Buttons */
+    .btn.btn-op {
+      background: var(--operator-bg);
+      color: var(--operator-color);
+      border-color: var(--operator-border);
+      font-size: 1.35rem;
+    }
+
+    .btn.btn-op:hover {
+      background: rgba(99, 102, 241, 0.28);
+      color: #fff;
+    }
+
+    .btn.btn-fn {
+      background: var(--fn-btn-bg);
+      color: var(--fn-btn-color);
+      font-size: 1.05rem;
+    }
+
+    .btn.btn-fn:hover {
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn.btn-clear {
+      background: var(--danger-bg);
+      color: var(--danger-color);
+      border-color: var(--danger-border);
+    }
+
+    .btn.btn-clear:hover {
+      background: rgba(244, 63, 94, 0.28);
+      color: #fff;
+    }
+
+    .btn.btn-equal {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 6px 20px var(--accent-glow);
+      font-size: 1.5rem;
+    }
+
+    .btn.btn-equal:hover {
+      box-shadow: 0 8px 26px var(--accent-glow);
+      filter: brightness(1.1);
+    }
+
+    .btn.btn-sci {
+      height: 48px;
+      font-size: 0.95rem;
+      border-radius: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+    }
+
+    /* History Drawer / Modal */
+    .history-drawer {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 16, 30, 0.96);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      z-index: 50;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(105%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .history-drawer.open {
+      transform: translateY(0);
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .history-header h3 {
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: right;
+    }
+
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent);
+      transform: scale(0.99);
+    }
+
+    .history-item .hist-expr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .history-item .hist-res {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .history-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .history-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .footer-action-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .footer-action-btn.danger:hover {
+      background: var(--danger-bg);
+      color: var(--danger-color);
+      border-color: var(--danger-border);
+    }
+
+    /* Theme Picker Dropdown */
+    .theme-menu {
+      position: absolute;
+      top: 65px;
+      right: 24px;
+      background: rgba(15, 20, 36, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      z-index: 60;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 160px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .theme-menu.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .theme-opt {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .theme-opt:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .theme-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Footer Info */
+    .creator-footer {
+      margin-top: 18px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .creator-footer span.heart {
+      color: #f43f5e;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .calculator-container {
+        padding: 20px 16px;
+        border-radius: 24px;
+      }
+      .btn {
+        height: 54px;
+        font-size: 1.15rem;
+        border-radius: 14px;
+      }
+      .display-main {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Orbs -->
+  <div class="ambient-orb ambient-orb-1"></div>
+  <div class="ambient-orb ambient-orb-2"></div>
+
+  <div class="app-wrapper" id="appWrapper">
+    <div class="calculator-container" id="calculatorContainer">
+
+      <!-- Header -->
+      <div class="calc-header">
+        <div class="brand">
+          <div class="brand-icon">M</div>
+          <div class="brand-title">
+            MIRFAYZ
+            <span class="brand-badge">PRO</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="icon-btn" id="soundToggle" title="Ovoz (Yoqish/O'chirish)">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+          <button class="icon-btn" id="sciToggle" title="Ilmiy rejim">
+            <i class="fa-solid fa-square-root-variable"></i>
+          </button>
+          <button class="icon-btn" id="themeBtn" title="Mavzuni almashtirish">
+            <i class="fa-solid fa-palette"></i>
+          </button>
+          <button class="icon-btn" id="historyToggle" title="Hisoblashlar tarixi">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Theme Dropdown -->
+      <div class="theme-menu" id="themeMenu">
+        <button class="theme-opt" data-set-theme="default">
+          <span class="theme-dot" style="background: #6366f1;"></span> Indigo Night
+        </button>
+        <button class="theme-opt" data-set-theme="emerald">
+          <span class="theme-dot" style="background: #10b981;"></span> Emerald Jade
+        </button>
+        <button class="theme-opt" data-set-theme="cyber">
+          <span class="theme-dot" style="background: #ec4899;"></span> Cyber Neon
+        </button>
+        <button class="theme-opt" data-set-theme="amber">
+          <span class="theme-dot" style="background: #f59e0b;"></span> Sunset Amber
+        </button>
+      </div>
+
+      <!-- Display Screen -->
+      <div class="display-screen">
+        <div class="display-status-bar">
+          <div class="mode-indicator">
+            <span class="pill-tag active" id="degRadPill">DEG</span>
+            <span class="pill-tag" id="memoryPill" style="display: none;">M</span>
+          </div>
+          <div id="liveClock">--:--:--</div>
+        </div>
+
+        <div class="display-history-expr" id="calcHistoryExpr"></div>
+        <div class="display-main" id="calcDisplay">0</div>
+
+        <div class="display-tools">
+          <button class="mini-tool-btn" id="copyBtn" title="Natijani nusxalash">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+          <button class="mini-tool-btn" id="backspaceBtn" title="O'chirish (Backspace)">
+            <i class="fa-solid fa-delete-left"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Scientific Grid (Toggleable) -->
+      <div class="scientific-grid" id="scientificGrid">
+        <button class="btn btn-sci" data-action="deg-rad" id="degRadBtn">DEG</button>
+        <button class="btn btn-sci" data-action="sin">sin</button>
+        <button class="btn btn-sci" data-action="cos">cos</button>
+        <button class="btn btn-sci" data-action="tan">tan</button>
+        <button class="btn btn-sci" data-action="pi">π</button>
+        <button class="btn btn-sci" data-action="e">e</button>
+
+        <button class="btn btn-sci" data-action="square">x²</button>
+        <button class="btn btn-sci" data-action="cube">x³</button>
+        <button class="btn btn-sci" data-action="power">xʸ</button>
+        <button class="btn btn-sci" data-action="sqrt">√x</button>
+        <button class="btn btn-sci" data-action="log">log</button>
+        <button class="btn btn-sci" data-action="ln">ln</button>
+
+        <button class="btn btn-sci" data-action="open-paren">(</button>
+        <button class="btn btn-sci" data-action="close-paren">)</button>
+        <button class="btn btn-sci" data-action="factorial">n!</button>
+        <button class="btn btn-sci" data-action="reciprocal">1/x</button>
+        <button class="btn btn-sci" data-action="mem-add">M+</button>
+        <button class="btn btn-sci" data-action="mem-clear">MC</button>
+      </div>
+
+      <!-- Standard Keypad Grid -->
+      <div class="standard-grid">
+        <button class="btn btn-clear" data-action="clear-all">AC</button>
+        <button class="btn btn-fn" data-action="negate">±</button>
+        <button class="btn btn-fn" data-action="percent">%</button>
+        <button class="btn btn-op" data-action="operator" data-val="÷">÷</button>
+
+        <button class="btn" data-num="7">7</button>
+        <button class="btn" data-num="8">8</button>
+        <button class="btn" data-num="9">9</button>
+        <button class="btn btn-op" data-action="operator" data-val="×">×</button>
+
+        <button class="btn" data-num="4">4</button>
+        <button class="btn" data-num="5">5</button>
+        <button class="btn" data-num="6">6</button>
+        <button class="btn btn-op" data-action="operator" data-val="-">−</button>
+
+        <button class="btn" data-num="1">1</button>
+        <button class="btn" data-num="2">2</button>
+        <button class="btn" data-num="3">3</button>
+        <button class="btn btn-op" data-action="operator" data-val="+">+</button>
+
+        <button class="btn" data-num="0">0</button>
+        <button class="btn" data-num="00">00</button>
+        <button class="btn" data-action="decimal">.</button>
+        <button class="btn btn-equal" data-action="calculate">=</button>
+      </div>
+
+      <!-- History Sliding Drawer -->
+      <div class="history-drawer" id="historyDrawer">
+        <div class="history-header">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> Hisoblar tarixi</h3>
+          <button class="icon-btn" id="closeHistoryBtn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty">
+            <i class="fa-solid fa-calculator" style="font-size: 2rem; opacity: 0.3;"></i>
+            <span>Hozircha hisoblashlar mavjud emas</span>
+          </div>
+        </div>
+        <div class="history-footer">
+          <button class="footer-action-btn danger" id="clearHistoryBtn">
+            <i class="fa-solid fa-trash-can"></i> Tarixni tozalash
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Creator Branding -->
+    <div class="creator-footer">
+      <span>Yaratuvchi: <strong>Mirfayz</strong></span>
+      <span>•</span>
+      <span>Tezkor & Zamonaviy Kalkulyator</span>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastNotification">
+    <i class="fa-solid fa-check"></i>
+    <span id="toastMsg">Nusxalandi!</span>
+  </div>
+
+  <script>
+    // State management
+    class MirfayzCalculator {
+      constructor() {
+        this.currentInput = '0';
+        this.previousInput = '';
+        this.operation = null;
+        this.resetNext = false;
+        this.history = JSON.parse(localStorage.getItem('mirfayz_calc_history') || '[]');
+        this.memory = 0;
+        this.isDegree = true;
+        this.soundEnabled = true;
+        
+        // Audio Context for tactile realistic clicks
+        this.audioCtx = null;
+        
+        this.initDom();
+        this.initEvents();
+        this.renderHistory();
+        this.startClock();
+      }
+
+      initDom() {
+        this.display = document.getElementById('calcDisplay');
+        this.historyExpr = document.getElementById('calcHistoryExpr');
+        this.appWrapper = document.getElementById('appWrapper');
+        this.scientificGrid = document.getElementById('scientificGrid');
+        this.historyDrawer = document.getElementById('historyDrawer');
+        this.historyList = document.getElementById('historyList');
+        this.themeMenu = document.getElementById('themeMenu');
+        this.toast = document.getElementById('toastNotification');
+        this.toastMsg = document.getElementById('toastMsg');
+        this.degRadPill = document.getElementById('degRadPill');
+        this.degRadBtn = document.getElementById('degRadBtn');
+        this.memoryPill = document.getElementById('memoryPill');
+        this.soundToggle = document.getElementById('soundToggle');
+        this.sciToggle = document.getElementById('sciToggle');
+      }
+
+      initAudio() {
+        if (!this.audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.audioCtx = new AudioContext();
+          }
+        }
+      }
+
+      playClick(freq = 600, type = 'sine', duration = 0.04) {
+        if (!this.soundEnabled) return;
+        try {
+          this.initAudio();
+          if (!this.audioCtx) return;
+          if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+          }
+          const osc = this.audioCtx.createOscillator();
+          const gain = this.audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.audioCtx.destination);
+          osc.start();
+          osc.stop(this.audioCtx.currentTime + duration);
+        } catch (e) {
+          // ignore audio failure
+        }
+      }
+
+      showToast(text) {
+        this.toastMsg.textContent = text;
+        this.toast.classList.add('show');
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => {
+          this.toast.classList.remove('show');
+        }, 2200);
+      }
+
+      startClock() {
+        const update = () => {
+          const now = new Date();
+          const hrs = String(now.getHours()).padStart(2, '0');
+          const mins = String(now.getMinutes()).padStart(2, '0');
+          const secs = String(now.getSeconds()).padStart(2, '0');
+          const clockEl = document.getElementById('liveClock');
+          if (clockEl) clockEl.textContent = `${hrs}:${mins}:${secs}`;
+        };
+        update();
+        setInterval(update, 1000);
+      }
+
+      updateDisplay() {
+        let text = this.currentInput;
+        // Format thousands with space if it's a valid clean number
+        if (!isNaN(text) && !text.includes('e') && text.length < 16) {
+          const parts = text.split('.');
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+          text = parts.join('.');
+        }
+        this.display.textContent = text;
+
+        // Auto font-size adjustment for large numbers
+        const len = this.currentInput.length;
+        if (len > 14) {
+          this.display.style.fontSize = '1.6rem';
+        } else if (len > 10) {
+          this.display.style.fontSize = '2rem';
+        } else {
+          this.display.style.fontSize = '2.6rem';
+        }
+
+        if (this.operation && this.previousInput !== '') {
+          this.historyExpr.textContent = `${this.previousInput} ${this.operation}`;
+        } else {
+          this.historyExpr.textContent = this.previousInput;
+        }
+      }
+
+      appendNumber(num) {
+        this.playClick(650);
+        if (this.resetNext) {
+          this.currentInput = num === '00' ? '0' : num;
+          this.resetNext = false;
+        } else {
+          if (this.currentInput === '0' && num !== '.') {
+            this.currentInput = num === '00' ? '0' : num;
+          } else {
+            if (this.currentInput.length >= 18) return;
+            this.currentInput += num;
+          }
+        }
+        this.updateDisplay();
+      }
+
+      appendDecimal() {
+        this.playClick(500);
+        if (this.resetNext) {
+          this.currentInput = '0.';
+          this.resetNext = false;
+        } else if (!this.currentInput.includes('.')) {
+          this.currentInput += '.';
+        }
+        this.updateDisplay();
+      }
+
+      clearAll() {
+        this.playClick(320, 'triangle', 0.08);
+        this.currentInput = '0';
+        this.previousInput = '';
+        this.operation = null;
+        this.resetNext = false;
+        this.updateDisplay();
+      }
+
+      deleteLast() {
+        this.playClick(400);
+        if (this.resetNext) {
+          this.currentInput = '0';
+          this.resetNext = false;
+        } else if (this.currentInput.length > 1) {
+          this.currentInput = this.currentInput.slice(0, -1);
+          if (this.currentInput === '-' || this.currentInput === '') {
+            this.currentInput = '0';
+          }
+        } else {
+          this.currentInput = '0';
+        }
+        this.updateDisplay();
+      }
+
+      negate() {
+        this.playClick(550);
+        if (this.currentInput === '0') return;
+        if (this.currentInput.startsWith('-')) {
+          this.currentInput = this.currentInput.slice(1);
+        } else {
+          this.currentInput = '-' + this.currentInput;
+        }
+        this.updateDisplay();
+      }
+
+      percent() {
+        this.playClick(550);
+        const val = parseFloat(this.currentInput);
+        if (isNaN(val)) return;
+        this.currentInput = String(this.roundPrecision(val / 100));
+        this.updateDisplay();
+      }
+
+      setOperator(op) {
+        this.playClick(750);
+        if (this.operation && !this.resetNext) {
+          this.compute();
+        }
+        this.previousInput = this.currentInput;
+        this.operation = op;
+        this.resetNext = true;
+        this.updateDisplay();
+      }
+
+      roundPrecision(num) {
+        if (!isFinite(num)) return num;
+        return Math.round((num + Number.EPSILON) * 1e12) / 1e12;
+      }
+
+      compute() {
+        if (!this.operation || this.previousInput === '') return;
+        this.playClick(850, 'sine', 0.08);
+
+        const prev = parseFloat(this.previousInput);
+        const curr = parseFloat(this.currentInput);
+        if (isNaN(prev) || isNaN(curr)) return;
+
+        let result = 0;
+        switch (this.operation) {
+          case '+':
+            result = prev + curr;
+            break;
+          case '-':
+            result = prev - curr;
+            break;
+          case '×':
+          case '*':
+            result = prev * curr;
+            break;
+          case '÷':
+          case '/':
+            if (curr === 0) {
+              this.showToast('Nolga bo\'lib bo\'lmaydi!');
+              this.currentInput = 'Xato';
+              this.operation = null;
+              this.previousInput = '';
+              this.resetNext = true;
+              this.updateDisplay();
+              return;
+            }
+            result = prev / curr;
+            break;
+          case '^':
+            result = Math.pow(prev, curr);
+            break;
+          default:
+            return;
+        }
+
+        result = this.roundPrecision(result);
+        const expression = `${prev} ${this.operation} ${curr}`;
+        
+        // Save history
+        this.addHistory(expression, result);
+
+        this.currentInput = String(result);
+        this.previousInput = `${expression} =`;
+        this.operation = null;
+        this.resetNext = true;
+        this.updateDisplay();
+      }
+
+      scientificFunction(type) {
+        this.playClick(680);
+        let val = parseFloat(this.currentInput);
+        if (isNaN(val)) return;
+        let res = 0;
+        let expr = '';
+
+        switch (type) {
+          case 'sin':
+            const sinAngle = this.isDegree ? (val * Math.PI) / 180 : val;
+            res = Math.sin(sinAngle);
+            expr = `sin(${val})`;
+            break;
+          case 'cos':
+            const cosAngle = this.isDegree ? (val * Math.PI) / 180 : val;
+            res = Math.cos(cosAngle);
+            expr = `cos(${val})`;
+            break;
+          case 'tan':
+            const tanAngle = this.isDegree ? (val * Math.PI) / 180 : val;
+            if (Math.abs(Math.cos(tanAngle)) < 1e-12) {
+              this.showToast('Mavjud emas');
+              return;
+            }
+            res = Math.tan(tanAngle);
+            expr = `tan(${val})`;
+            break;
+          case 'pi':
+            res = Math.PI;
+            expr = 'π';
+            break;
+          case 'e':
+            res = Math.E;
+            expr = 'e';
+            break;
+          case 'square':
+            res = val * val;
+            expr = `sqr(${val})`;
+            break;
+          case 'cube':
+            res = val * val * val;
+            expr = `cube(${val})`;
+            break;
+          case 'sqrt':
+            if (val < 0) {
+              this.showToast('Manfiy sondan ildiz chiqarib bo\'lmaydi!');
+              return;
+            }
+            res = Math.sqrt(val);
+            expr = `√(${val})`;
+            break;
+          case 'log':
+            if (val <= 0) {
+              this.showToast('Logarifm argumenti > 0 bo\'lishi shart');
+              return;
+            }
+            res = Math.log10(val);
+            expr = `log(${val})`;
+            break;
+          case 'ln':
+            if (val <= 0) {
+              this.showToast('Argument > 0 bo\'lishi kerak');
+              return;
+            }
+            res = Math.log(val);
+            expr = `ln(${val})`;
+            break;
+          case 'reciprocal':
+            if (val === 0) {
+              this.showToast('Nolga bo\'lish mumkin emas');
+              return;
+            }
+            res = 1 / val;
+            expr = `1/(${val})`;
+            break;
+          case 'factorial':
+            if (val < 0 || !Number.isInteger(val) || val > 170) {
+              this.showToast('Faqat 0 dan 170 gacha butun sonlar uchun');
+              return;
+            }
+            res = this.factorialCalc(val);
+            expr = `${val}!`;
+            break;
+          default:
+            return;
+        }
+
+        res = this.roundPrecision(res);
+        this.addHistory(expr, res);
+        this.currentInput = String(res);
+        this.previousInput = `${expr} =`;
+        this.resetNext = true;
+        this.updateDisplay();
+      }
+
+      factorialCalc(n) {
+        if (n === 0 || n === 1) return 1;
+        let r = 1;
+        for (let i = 2; i <= n; i++) r *= i;
+        return r;
+      }
+
+      memoryAction(act) {
+        this.playClick(600);
+        const val = parseFloat(this.currentInput) || 0;
+        if (act === 'mem-add') {
+          this.memory += val;
+          this.memoryPill.style.display = 'inline-block';
+          this.showToast(`Xotiraga qo'shildi: M = ${this.memory}`);
+        } else if (act === 'mem-clear') {
+          this.memory = 0;
+          this.memoryPill.style.display = 'none';
+          this.showToast('Xotira tozalandi');
+        }
+      }
+
+      addHistory(expr, result) {
+        this.history.unshift({ expr, result, time: new Date().toLocaleTimeString('uz-UZ') });
+        if (this.history.length > 30) this.history.pop();
+        localStorage.setItem('mirfayz_calc_history', JSON.stringify(this.history));
+        this.renderHistory();
+      }
+
+      renderHistory() {
+        if (this.history.length === 0) {
+          this.historyList.innerHTML = `
+            <div class="history-empty">
+              <i class="fa-solid fa-calculator" style="font-size: 2rem; opacity: 0.3;"></i>
+              <span>Hozircha hisoblashlar mavjud emas</span>
+            </div>
+          `;
+          return;
+        }
+
+        this.historyList.innerHTML = this.history.map((item, idx) => `
+          <div class="history-item" data-index="${idx}">
+            <div class="hist-expr">${item.expr} =</div>
+            <div class="hist-res">${item.result}</div>
+          </div>
+        `).join('');
+
+        this.historyList.querySelectorAll('.history-item').forEach(el => {
+          el.addEventListener('click', () => {
+            const idx = el.dataset.index;
+            const chosen = this.history[idx];
+            if (chosen) {
+              this.currentInput = String(chosen.result);
+              this.previousInput = `${chosen.expr} =`;
+              this.resetNext = true;
+              this.updateDisplay();
+              this.historyDrawer.classList.remove('open');
+              this.showToast('Natija ekranga tiklandi');
+            }
+          });
+        });
+      }
+
+      clearHistory() {
+        this.history = [];
+        localStorage.removeItem('mirfayz_calc_history');
+        this.renderHistory();
+        this.showToast('Tarix tozalandi');
+      }
+
+      createRipple(e, btn) {
+        const circle = document.createElement('span');
+        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+        const radius = diameter / 2;
+        const rect = btn.getBoundingClientRect();
+
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${(e.clientX || rect.left + radius) - rect.left - radius}px`;
+        circle.style.top = `${(e.clientY || rect.top + radius) - rect.top - radius}px`;
+        circle.classList.add('ripple');
+
+        const ripple = btn.querySelector('.ripple');
+        if (ripple) ripple.remove();
+        btn.appendChild(circle);
+      }
+
+      initEvents() {
+        // Number clicks
+        document.querySelectorAll('[data-num]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            this.createRipple(e, btn);
+            this.appendNumber(btn.dataset.num);
+          });
+        });
+
+        // Decimal click
+        document.querySelector('[data-action="decimal"]').addEventListener('click', (e) => {
+          this.createRipple(e, e.currentTarget);
+          this.appendDecimal();
+        });
+
+        // Operators
+        document.querySelectorAll('[data-action="operator"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            this.createRipple(e, btn);
+            this.setOperator(btn.dataset.val);
+          });
+        });
+
+        // Calculate =
+        document.querySelector('[data-action="calculate"]').addEventListener('click', (e) => {
+          this.createRipple(e, e.currentTarget);
+          this.compute();
+        });
+
+        // Clear AC
+        document.querySelector('[data-action="clear-all"]').addEventListener('click', (e) => {
+          this.createRipple(e, e.currentTarget);
+          this.clearAll();
+        });
+
+        // Negate ±
+        document.querySelector('[data-action="negate"]').addEventListener('click', (e) => {
+          this.createRipple(e, e.currentTarget);
+          this.negate();
+        });
+
+        // Percent %
+        document.querySelector('[data-action="percent"]').addEventListener('click', (e) => {
+          this.createRipple(e, e.currentTarget);
+          this.percent();
+        });
+
+        // Copy button
+        document.getElementById('copyBtn').addEventListener('click', () => {
+          navigator.clipboard.writeText(this.currentInput).then(() => {
+            this.showToast('Natija nusxalandi: ' + this.currentInput);
+          }).catch(() => {
+            this.showToast('Nusxalashda xatolik yuz berdi');
+          });
+        });
+
+        // Backspace
+        document.getElementById('backspaceBtn').addEventListener('click', () => {
+          this.deleteLast();
+        });
+
+        // Scientific Mode Toggle
+        this.sciToggle.addEventListener('click', () => {
+          this.playClick(500);
+          this.appWrapper.classList.toggle('scientific-mode');
+          this.sciToggle.classList.toggle('active');
+        });
+
+        // Deg / Rad toggle
+        this.degRadBtn.addEventListener('click', () => {
+          this.isDegree = !this.isDegree;
+          const label = this.isDegree ? 'DEG' : 'RAD';
+          this.degRadBtn.textContent = label;
+          this.degRadPill.textContent = label;
+          this.showToast(`Burchak o'lchovi: ${label}`);
+        });
+
+        // Scientific functions
+        document.querySelectorAll('.scientific-grid .btn-sci').forEach(btn => {
+          const act = btn.dataset.action;
+          if (!act || act === 'deg-rad') return;
+          btn.addEventListener('click', (e) => {
+            this.createRipple(e, btn);
+            if (act === 'mem-add' || act === 'mem-clear') {
+              this.memoryAction(act);
+            } else if (act === 'power') {
+              this.setOperator('^');
+            } else {
+              this.scientificFunction(act);
+            }
+          });
+        });
+
+        // Sound toggle
+        this.soundToggle.addEventListener('click', () => {
+          this.soundEnabled = !this.soundEnabled;
+          this.soundToggle.innerHTML = this.soundEnabled 
+            ? '<i class="fa-solid fa-volume-high"></i>' 
+            : '<i class="fa-solid fa-volume-xmark"></i>';
+          this.showToast(this.soundEnabled ? 'Ovoz yoqildi' : 'Ovoz o\'chirildi');
+          if (this.soundEnabled) this.playClick(600);
+        });
+
+        // History Drawer Toggle
+        document.getElementById('historyToggle').addEventListener('click', () => {
+          this.playClick(500);
+          this.historyDrawer.classList.add('open');
+        });
+
+        document.getElementById('closeHistoryBtn').addEventListener('click', () => {
+          this.playClick(400);
+          this.historyDrawer.classList.remove('open');
+        });
+
+        document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+          this.clearHistory();
+        });
+
+        // Theme Menu
+        document.getElementById('themeBtn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.themeMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!this.themeMenu.contains(e.target)) {
+            this.themeMenu.classList.remove('active');
+          }
+        });
+
+        document.querySelectorAll('.theme-opt').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const theme = btn.dataset.setTheme;
+            if (theme === 'default') {
+              document.documentElement.removeAttribute('data-theme');
+            } else {
+              document.documentElement.setAttribute('data-theme', theme);
+            }
+            this.themeMenu.classList.remove('active');
+            this.showToast(`Mavzu o'zgartirildi`);
+          });
+        });
+
+        // Physical Keyboard Support
+        window.addEventListener('keydown', (e) => {
+          // If history modal open, Escape closes it
+          if (e.key === 'Escape' && this.historyDrawer.classList.contains('open')) {
+            this.historyDrawer.classList.remove('open');
+            return;
+          }
+
+          if (e.key >= '0' && e.key <= '9') {
+            this.highlightKey(`[data-num="${e.key}"]`);
+            this.appendNumber(e.key);
+          } else if (e.key === '.' || e.key === ',') {
+            this.highlightKey('[data-action="decimal"]');
+            this.appendDecimal();
+          } else if (e.key === '+' || e.key === '-') {
+            this.highlightKey(`[data-val="${e.key}"]`);
+            this.setOperator(e.key);
+          } else if (e.key === '*') {
+            this.highlightKey('[data-val="×"]');
+            this.setOperator('×');
+          } else if (e.key === '/') {
+            e.preventDefault();
+            this.highlightKey('[data-val="÷"]');
+            this.setOperator('÷');
+          } else if (e.key === 'Enter' || e.key === '=') {
+            e.preventDefault();
+            this.highlightKey('[data-action="calculate"]');
+            this.compute();
+          } else if (e.key === 'Backspace') {
+            this.highlightKey('#backspaceBtn');
+            this.deleteLast();
+          } else if (e.key === 'Escape') {
+            this.highlightKey('[data-action="clear-all"]');
+            this.clearAll();
+          } else if (e.key === '%') {
+            this.highlightKey('[data-action="percent"]');
+            this.percent();
+          }
+        });
+      }
+
+      highlightKey(selector) {
+        const btn = document.querySelector(selector);
+        if (btn) {
+          btn.classList.add('keyboard-active');
+          setTimeout(() => btn.classList.remove('keyboard-active'), 120);
+        }
+      }
+    }
+
+    // Initialize Calculator on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      window.calc = new MirfayzCalculator();
+    });
+  </script>
+</body>
+</html>
