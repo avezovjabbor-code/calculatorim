@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parizod - Zamonaviy va Nafis Kalkulyator</title>
+  <meta name="description" content="Parizod — go'zal dizayn va keng imkoniyatlarga ega zamonaviy aqlli kalkulyator dasturi. Standart, ilmiy va konverter rejimlari.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="rose-gold">
+  <!-- Dynamic Ambient Background Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Nusxalandi!</div>
+
+  <!-- Main App Wrapper -->
+  <div class="calculator-app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Parizod</h1>
+          <span class="brand-subtitle">Aqlli va Nafis Kalkulyator</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Sound Toggle -->
+        <button id="soundToggle" class="icon-btn" title="Ovozni yoqish/o'chirish" aria-label="Ovoz">
+          <svg id="soundOnIcon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="soundOffIcon" class="hidden" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Theme Picker Dropdown Trigger -->
+        <div class="theme-dropdown-wrapper">
+          <button id="themeBtn" class="icon-btn" title="Mavzuni o'zgartirish" aria-label="Mavzu">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div id="themeMenu" class="theme-menu">
+            <button class="theme-opt active" data-set-theme="rose-gold">🌸 Parizod (Pushti / Oltin)</button>
+            <button class="theme-opt" data-set-theme="dark-obsidian">🌌 Tungi Kosmos (Qora / Neon)</button>
+            <button class="theme-opt" data-set-theme="emerald-luxury">✨ Zumrad (Yashil / Oltin)</button>
+            <button class="theme-opt" data-set-theme="sunset-glow">🌅 Qizil Shafaq (Binafsha / Olov)</button>
+          </div>
+        </div>
+
+        <!-- History Toggle -->
+        <button id="historyToggleBtn" class="icon-btn" title="Tarixni ko'rish" aria-label="Tarix">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="12 8 12 12 14 14"></polyline>
+            <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path>
+          </svg>
+          <span id="historyBadge" class="history-badge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Modes -->
+    <nav class="mode-tabs">
+      <button class="mode-tab active" data-mode="standard">Standart</button>
+      <button class="mode-tab" data-mode="scientific">Muhandislik</button>
+      <button class="mode-tab" data-mode="converter">Konverter</button>
+    </nav>
+
+    <!-- Calculator View (Standard & Scientific) -->
+    <main id="calculatorView" class="calculator-view">
+      <!-- Screen Display -->
+      <section class="display-container">
+        <div class="display-top">
+          <div class="memory-indicators">
+            <span id="degRadIndicator" class="indicator-badge hidden">DEG</span>
+            <span id="memoryIndicator" class="indicator-badge hidden">M</span>
+          </div>
+          <div id="expressionDisplay" class="expression-display" title="Ifoda"></div>
+        </div>
+        
+        <div class="display-main">
+          <div id="mainDisplay" class="main-display" tabindex="0">0</div>
+          <button id="copyBtn" class="copy-display-btn" title="Natijani nusxalash" aria-label="Nusxalash">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Memory Controls -->
+      <div class="memory-bar">
+        <button class="mem-btn" data-action="mc">MC</button>
+        <button class="mem-btn" data-action="mr">MR</button>
+        <button class="mem-btn" data-action="m-plus">M+</button>
+        <button class="mem-btn" data-action="m-minus">M-</button>
+        <button class="mem-btn" data-action="ms">MS</button>
+      </div>
+
+      <!-- Scientific Panel (Toggled when in scientific mode) -->
+      <div id="scientificPanel" class="scientific-panel hidden">
+        <button class="btn btn-sci" data-action="angle-toggle" id="degRadBtn">DEG</button>
+        <button class="btn btn-sci" data-action="sin">sin</button>
+        <button class="btn btn-sci" data-action="cos">cos</button>
+        <button class="btn btn-sci" data-action="tan">tan</button>
+        <button class="btn btn-sci" data-action="pi">π</button>
+
+        <button class="btn btn-sci" data-action="e">e</button>
+        <button class="btn btn-sci" data-action="ln">ln</button>
+        <button class="btn btn-sci" data-action="log">log</button>
+        <button class="btn btn-sci" data-action="pow">xʸ</button>
+        <button class="btn btn-sci" data-action="sqrt">√</button>
+
+        <button class="btn btn-sci" data-action="fact">n!</button>
+        <button class="btn btn-sci" data-action="sqr">x²</button>
+        <button class="btn btn-sci" data-action="inv">1/x</button>
+        <button class="btn btn-sci" data-action="open-paren">(</button>
+        <button class="btn btn-sci" data-action="close-paren">)</button>
+      </div>
+
+      <!-- Keypad -->
+      <div class="keypad">
+        <button class="btn btn-action" data-action="clear-all" id="btnAC">AC</button>
+        <button class="btn btn-action" data-action="backspace" id="btnDelete">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+            <line x1="18" y1="9" x2="12" y2="15"></line>
+            <line x1="12" y1="9" x2="18" y2="15"></line>
+          </svg>
+        </button>
+        <button class="btn btn-action" data-action="percent">%</button>
+        <button class="btn btn-op" data-action="divide" data-op="÷">÷</button>
+
+        <button class="btn btn-num" data-num="7">7</button>
+        <button class="btn btn-num" data-num="8">8</button>
+        <button class="btn btn-num" data-num="9">9</button>
+        <button class="btn btn-op" data-action="multiply" data-op="×">×</button>
+
+        <button class="btn btn-num" data-num="4">4</button>
+        <button class="btn btn-num" data-num="5">5</button>
+        <button class="btn btn-num" data-num="6">6</button>
+        <button class="btn btn-op" data-action="subtract" data-op="-">−</button>
+
+        <button class="btn btn-num" data-num="1">1</button>
+        <button class="btn btn-num" data-num="2">2</button>
+        <button class="btn btn-num" data-num="3">3</button>
+        <button class="btn btn-op" data-action="add" data-op="+">+</button>
+
+        <button class="btn btn-num" data-action="negate">±</button>
+        <button class="btn btn-num" data-num="0">0</button>
+        <button class="btn btn-num" data-action="dot">.</button>
+        <button class="btn btn-equals" data-action="equals">=</button>
+      </div>
+    </main>
+
+    <!-- Converter View -->
+    <section id="converterView" class="converter-view hidden">
+      <div class="converter-card">
+        <h2 class="converter-title">Aqlli Konverter</h2>
+        <p class="converter-desc">Valyuta va o'lchov birliklarini bir zumda hisoblang</p>
+
+        <div class="converter-type-selector">
+          <button class="conv-type-btn active" data-conv-type="currency">Valyuta</button>
+          <button class="conv-type-btn" data-conv-type="length">Uzunlik</button>
+          <button class="conv-type-btn" data-conv-type="weight">Og'irlik</button>
+          <button class="conv-type-btn" data-conv-type="temp">Harorat</button>
+        </div>
+
+        <div class="converter-fields">
+          <div class="conv-input-group">
+            <label for="convFromValue">Dastlabki qiymat:</label>
+            <div class="input-with-select">
+              <input type="number" id="convFromValue" value="1" step="any">
+              <select id="convFromUnit"></select>
+            </div>
+          </div>
+
+          <div class="conv-swap-btn-box">
+            <button id="convSwapBtn" class="swap-btn" title="O'rin almashtirish">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                <polyline points="17 1 21 5 17 9"></polyline>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                <polyline points="7 23 3 19 7 15"></polyline>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="conv-input-group">
+            <label for="convToValue">Natija:</label>
+            <div class="input-with-select">
+              <input type="number" id="convToValue" readonly>
+              <select id="convToUnit"></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="converter-info" id="convFormulaText">
+          1 USD ≈ 12,850 UZS
+        </div>
+      </div>
+    </section>
+
+    <!-- History Drawer / Modal -->
+    <aside id="historyDrawer" class="history-drawer">
+      <div class="history-header">
+        <div class="history-title-row">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <h3>Hisob-kitoblar tarixi</h3>
+        </div>
+        <div class="history-actions">
+          <button id="clearHistoryBtn" class="text-btn danger" title="Tarixni tozalash">Tozalash</button>
+          <button id="closeHistoryBtn" class="icon-btn small" title="Yopish">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div id="historyList" class="history-list">
+        <div class="empty-history">
+          <svg viewBox="0 0 24 24" width="40" height="40" stroke="currentColor" stroke-width="1.5" fill="none">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M7 15h0M2 9.5h20"></path>
+          </svg>
+          <p>Hozircha hisob-kitoblar yo'q</p>
+          <small>Bajarilgan barcha amallar shu yerda saqlanadi</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- History Overlay Backdrop -->
+    <div id="historyOverlay" class="history-overlay hidden"></div>
+
+    <!-- Quick Keyboard Help Bar -->
+    <footer class="app-footer">
+      <span class="tip-badge">Maslahat:</span>
+      <span>Klaviatura raqamlari, <kbd>Enter</kbd> (=), <kbd>Esc</kbd> (tozalash), <kbd>Backspace</kbd> (o'chirish) qo'llab-quvvatlanadi</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
